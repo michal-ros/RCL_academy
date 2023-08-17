@@ -5,19 +5,10 @@
 
 2. Create container for database and PgAdmin:
 
-`podman run --pod=academy \
--e PGADMIN_DEFAULT_EMAIL=pgadmin@test.pl \
--e PGADMIN_DEFAULT_PASSWORD=password \
---name pgadmin \
--d dpage/pgadmin4
-`
+`podman run --pod=academy -e PGADMIN_DEFAULT_EMAIL=pgadmin@test.pl -e PGADMIN_DEFAULT_PASSWORD=password --name pgadmin -d dpage/pgadmin4`
 
-`podman run --pod=academy \
--e POSTGRES_PASSWORD=password \
--e POSTGRES_USER=postgres \
---name postgres \
--d postgres
-`
+`podman run --pod=academy -e POSTGRES_PASSWORD=password -e POSTGRES_USER=postgres --name postgres -d postgres`
+
 3. healthcheck: pod with name "academy" status should be "Running":
 
 `podman pod ps`
