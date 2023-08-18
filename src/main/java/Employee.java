@@ -1,8 +1,8 @@
 import java.util.Locale;
 
 public class Employee {
-    private String firstName;
-    private String lastName;
+    private final String firstName;
+    private final String lastName;
     private String countryId;
     private String countryName;
     private String stateProvince;
