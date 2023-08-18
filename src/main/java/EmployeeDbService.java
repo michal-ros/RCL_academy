@@ -106,7 +106,7 @@ public class EmployeeDbService {
                 )
             """;
 
-        boolean result = false;
+        boolean result;
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             connection.setAutoCommit(false);
@@ -116,35 +116,19 @@ public class EmployeeDbService {
             preparedStatement.setString(2, department);
 
             // Check result of execution
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows > 0) {
-                result = true;
-            }
+            result = preparedStatement.executeUpdate() > 0;
 
+            // Commit transaction if there was no error
             connection.commit();
 
         } catch (SQLException e) {
-            try {
-                // Rollback transaction if there was an error
-                connection.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            e.printStackTrace();
-            result = false;
+            // Rollback transaction if there was an error
+            connection.rollback();
+            throw e;
 
         } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            connection.setAutoCommit(true);
         }
-
         return result;
-
     }
-
-
-
 }
