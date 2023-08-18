@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
 
         // Create an instance of EmployeeDbService
         EmployeeDbService employeeDbService = new EmployeeDbService();
