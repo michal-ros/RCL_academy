@@ -107,9 +107,17 @@ public class EmployeeDAO {
 
         try (Connection connection = DbConnectionFactory.createConnection()) {
 
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(RAISE_IT_SALARY_BY_500_QUERY);
-            System.out.println("Salary for all IT employees has been raised by 500!");
+            connection.setAutoCommit(false);
+
+            try (Statement statement = connection.createStatement()){
+                statement.executeUpdate(RAISE_IT_SALARY_BY_500_QUERY);
+                connection.commit();
+                System.out.println("Salary for all IT employees has been raised by 500!");
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+            }
+
 
         } catch (SQLException e) {
             e.printStackTrace();
