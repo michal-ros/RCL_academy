@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
         // Create an instance of EmployeeDbService
         EmployeeDbService employeeDbService = new EmployeeDbService();
@@ -16,16 +16,12 @@ public class Main {
 
             // Get employees whose department is in Washington
             employees = employeeDbService.getEmployeesFromState(connection, "Washington");
-            for (Employee employee: employees) {
-                System.out.println(employee.toString());
-            }
+            employees.forEach(System.out::println);
 
             // Get employees whose department is in Canada
             employees = employeeDbService.getEmployeesFromCountry(connection, "CA");
             FileWriterHelper.writeToFile("employees.txt", employees, Employee::toString);
-        }
-        catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
+
         }
 
         // Second connection
@@ -37,10 +33,7 @@ public class Main {
             } else {
                 System.out.println("Salary raise failed!");
             }
-        }
-        catch (SQLException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
 
+        }
     }
 }
