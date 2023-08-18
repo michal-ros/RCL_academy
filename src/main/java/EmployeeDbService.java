@@ -52,7 +52,7 @@ public class EmployeeDbService {
      * @param connection connection to the database.
      * @param country country to search for.
      * @return list of employees.
-     * @throws SQLException
+     * @throws SQLException if the query is invalid.
      */
     public List<Employee> getEmployeesFromCountry(Connection connection, String country) throws SQLException {
         List<Employee> employees = new ArrayList<>();
@@ -90,7 +90,7 @@ public class EmployeeDbService {
      * @param connection connection to the database.
      * @param salaryIncrease salary increase to apply.
      * @param department department to search for.
-     * @return list of employees.
+     * @return true if the salary was raised successfully, false otherwise.
      * @throws SQLException if the query is invalid.
      */
     public boolean raiseSalaryInDepartment(Connection connection, BigDecimal salaryIncrease, String department) throws SQLException {
