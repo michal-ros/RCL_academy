@@ -1,9 +1,7 @@
-import java.util.Locale;
 
 public class Employee {
     private final String firstName;
     private final String lastName;
-    private String countryId;
     private String countryName;
     private String stateProvince;
 
@@ -12,11 +10,9 @@ public class Employee {
         this.lastName = lastName;
     }
 
-    public static Employee createWithCountry(String firstName, String lastName, String countryId) {
+    public static Employee createWithCountry(String firstName, String lastName, String countryName) {
         Employee employee = new Employee(firstName, lastName);
-        employee.countryId = countryId;
-        Locale locale = new Locale("", countryId);
-        employee.countryName = locale.getDisplayCountry();
+        employee.countryName = countryName;
         return employee;
     }
 
@@ -30,7 +26,7 @@ public class Employee {
     public String toString() {
         return firstName +
                 " " + lastName +
-                (countryId != null ? ", " + countryName : "") +
+                (countryName != null ? ", " + countryName : "") +
                 (stateProvince != null ? ", " + stateProvince : "");
     }
 }
