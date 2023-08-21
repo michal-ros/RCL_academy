@@ -24,8 +24,10 @@ public class EmployeeService {
                     "WHERE c.country_name='Canada'";
 
     private static final String RISE_SALARY_IN_IT_BY_500 =
-            "UPDATE employees SET salary=salary+500 WHERE department_id IN " +
-                    "(SELECT department_id FROM departments WHERE department_name='IT')";
+            "UPDATE employees AS e SET salary = e.salary + 500 " +
+                    "FROM departments AS d " +
+                    "WHERE e.department_id = d.department_id " +
+                    "AND d.department_name = 'IT'";
 
     public EmployeeService() {
     }
