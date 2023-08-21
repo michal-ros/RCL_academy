@@ -3,6 +3,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.rowset.RowSetProvider;
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,40 +52,60 @@ public class EmployeeDbService {
     /**
      * Get employees whose department is in some Country (e.g. Canada)
      *
-     * @param connection connection to the database.
-     * @param country country to search for.
      * @return list of employees.
-     * @throws SQLException if the query is invalid.
+     * @throws SQLException if the cached row set is invalid.
      */
-    public List<Employee> getEmployeesFromCountry(Connection connection, String country) throws SQLException {
+    public List<Employee> getEmployeesFromCountry(CachedRowSet crs) throws SQLException {
         List<Employee> employees = new ArrayList<>();
 
-        String query = """
-                SELECT
-                	employee.first_name,
-                	employee.last_name,
-                	location.country_id
-                FROM
-                	employees employee
-                JOIN departments department
-                	ON employee.department_id = department.department_id
-                JOIN locations location
-                	ON department.location_id = location.location_id
-                WHERE location.country_id = ?
-                """;
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, country);
-            ResultSet result = preparedStatement.executeQuery();
-
-            while (result.next()) {
-                String firstName = result.getString("first_name");
-                String lastName = result.getString("last_name");
-                String countryId = result.getString("country_id");
+        try (crs) {
+            while (crs.next()) {
+                String firstName = crs.getString("first_name");
+                String lastName = crs.getString("last_name");
+                String countryId = crs.getString("country_name");
                 employees.add(Employee.createWithCountry(firstName, lastName, countryId));
             }
         }
+
         return employees;
+    }
+
+    /**
+     * Fetch employees whose department is in some Country (e.g. Canada)
+     *
+     * @param connection connection to the database.
+     * @param country country to search for.
+     * @return cached row set of employees to further process.
+     * @throws SQLException if the query is invalid.
+     */
+    public CachedRowSet fetchEmployeesFromCountry(Connection connection, String country) throws SQLException {
+
+        String query = """
+                SELECT
+                    employee.first_name,
+                    employee.last_name,
+                    country.country_name
+                FROM
+                    employees employee
+                JOIN departments department
+                    ON employee.department_id = department.department_id
+                JOIN locations location
+                    ON department.location_id = location.location_id
+                JOIN countries country
+                    ON location.country_id = country.country_id
+                WHERE
+                    country.country_name = ?
+                """;
+
+        // Store results in a CachedRowSet and then pass them to the caller
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, country);
+            ResultSet result = preparedStatement.executeQuery();
+            RowSetFactory factory = RowSetProvider.newFactory();
+            CachedRowSet crs = factory.createCachedRowSet();
+            crs.populate(result);
+            return crs;
+        }
     }
 
     /**
@@ -109,8 +132,6 @@ public class EmployeeDbService {
         boolean result;
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            connection.setAutoCommit(false);
-
             // Set the parameters for the PreparedStatement
             preparedStatement.setBigDecimal(1, salaryIncrease);
             preparedStatement.setString(2, department);
@@ -118,16 +139,11 @@ public class EmployeeDbService {
             // Check result of execution
             result = preparedStatement.executeUpdate() > 0;
 
-            // Commit transaction if there was no error
-            connection.commit();
-
         } catch (SQLException e) {
             // Rollback transaction if there was an error
             connection.rollback();
             throw e;
 
-        } finally {
-            connection.setAutoCommit(true);
         }
         return result;
     }
