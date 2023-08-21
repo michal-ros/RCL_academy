@@ -56,7 +56,7 @@ public class EmployeeService {
     public List<Employee> getEmployeesFromCanada() {
         List<Employee> employees = new ArrayList<>();
         CachedRowSet crs;
-        try (Connection conn = DbConnectionFactory.createConnection()){
+        try (Connection conn = DbConnectionFactory.createConnection()) {
             Statement stat = conn.createStatement();
             ResultSet rs = stat.executeQuery(GET_EMPLOYEES_FROM_CANADA);
             RowSetFactory factory = RowSetProvider.newFactory();
@@ -66,7 +66,7 @@ public class EmployeeService {
             throw new RuntimeException(e);
         }
 
-        try{
+        try {
             while (crs.next()) {
                 Employee employee = Employee.builder()
                         .employeeId(crs.getInt("employee_id"))
@@ -87,19 +87,13 @@ public class EmployeeService {
     public int riseSalaryInITBy500() {
         int rowsAffected = 0;
         try (Connection conn = DbConnectionFactory.createConnection()) {
-            conn.setAutoCommit(false);
-            try {
-                Statement stat = conn.createStatement();
-                rowsAffected = stat.executeUpdate(RISE_SALARY_IN_IT_BY_500);
-                conn.commit();
-            } catch (SQLException e) {
-                conn.rollback();
-                System.err.println("TRANSACTION ROLLED BACK!");
-            }
-            conn.setAutoCommit(true);
-        } catch (SQLException e) {
-            System.err.println("CONNECTION ERROR!");
 
+            Statement stat = conn.createStatement();
+            //one query - no need to create transaction
+            rowsAffected = stat.executeUpdate(RISE_SALARY_IN_IT_BY_500);
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
         return rowsAffected;
     }
