@@ -16,7 +16,6 @@ public class Main {
         // First connection
         try (Connection connection = DbConnectionFactory.createConnection()) {
 
-
             // Get employees whose department is in Washington
             employees = employeeDbService.getEmployeesFromState(connection, "Washington");
             employees.forEach(System.out::println);

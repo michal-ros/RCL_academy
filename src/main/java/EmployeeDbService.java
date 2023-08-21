@@ -85,16 +85,14 @@ public class EmployeeDbService {
                     employee.first_name,
                     employee.last_name,
                     country.country_name
-                FROM
-                    employees employee
+                FROM employees employee
                 JOIN departments department
                     ON employee.department_id = department.department_id
                 JOIN locations location
                     ON department.location_id = location.location_id
                 JOIN countries country
                     ON location.country_id = country.country_id
-                WHERE
-                    country.country_name = ?
+                WHERE country.country_name = ?
                 """;
 
         // Store results in a CachedRowSet and then pass them to the caller
@@ -119,15 +117,12 @@ public class EmployeeDbService {
     public boolean raiseSalaryInDepartment(Connection connection, BigDecimal salaryIncrease, String department) throws SQLException {
 
         String query = """
-            UPDATE employees
-            SET salary = salary + ?
-            WHERE department_id
-                IN (
-                SELECT department_id
-                FROM departments
-                WHERE department_name = ?
-                )
-            """;
+                UPDATE employees employee
+                SET salary = salary + ?
+                FROM departments department
+                WHERE employee.department_id = department.department_id
+                AND department.department_name = ?
+                """;
 
         boolean result;
 
