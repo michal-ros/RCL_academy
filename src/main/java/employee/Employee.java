@@ -11,24 +11,21 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class Employee {
+    @ToString.Include
     private long id;
+    @ToString.Include
     private String firstName;
+    @ToString.Include
     private String lastName;
+    @ToString.Include
     private String countryName;
-    @ToString.Exclude
     private String email;
-    @ToString.Exclude
     private String phoneNumber;
-    @ToString.Exclude
     private LocalDateTime hireDate;
-    @ToString.Exclude
     private long jobId;
-    @ToString.Exclude
     private BigDecimal salary;
-    @ToString.Exclude
     private long managerId;
-    @ToString.Exclude
     private long departmentId;
 }

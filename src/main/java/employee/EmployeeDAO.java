@@ -5,10 +5,7 @@ import utils.DbConnectionFactory;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +25,8 @@ public class EmployeeDAO {
                     "JOIN countries c ON l.country_id = c.country_id " +
                     "WHERE country_name = 'Canada'";
 
-    private static final String RAISE_IT_SALARY_BY_500_QUERY =
-            "UPDATE employees  SET salary = salary+500 " +
+    private static final String RAISE_IT_SALARY_QUERY =
+            "UPDATE employees  SET salary = salary+? " +
                     "WHERE department_id = 6";
 
     public List<Employee> getEmployeesFromWashington() {
@@ -103,15 +100,13 @@ public class EmployeeDAO {
         }
     }
 
-    public void riseITEmployeesSalaryBy500() {
+    public void riseITEmployeesSalary(int raise) {
 
         try (Connection connection = DbConnectionFactory.createConnection()) {
 
-            connection.setAutoCommit(false);
-
-            try (Statement statement = connection.createStatement()){
-                statement.executeUpdate(RAISE_IT_SALARY_BY_500_QUERY);
-                connection.commit();
+            try (PreparedStatement statement = connection.prepareStatement(RAISE_IT_SALARY_QUERY)){
+                statement.setInt(1, raise);
+                statement.executeUpdate();
                 System.out.println("Salary for all IT employees has been raised by 500!");
             } catch (SQLException e) {
                 connection.rollback();

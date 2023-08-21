@@ -10,7 +10,7 @@ public class Main {
 
         employeeDAO.writeToFileEmployeesFromCanada();
 
-        employeeDAO.riseITEmployeesSalaryBy500();
+        employeeDAO.riseITEmployeesSalary(500);
 
     }
 }
